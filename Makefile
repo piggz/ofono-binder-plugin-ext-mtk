@@ -130,9 +130,6 @@ $(DEBUG_SO): $(DEBUG_OBJS)
 
 $(RELEASE_SO): $(RELEASE_OBJS)
 	$(LD) $(RELEASE_OBJS) $(RELEASE_LDFLAGS) $(RELEASE_LIBS) -o $@
-ifeq ($(KEEP_SYMBOLS),0)
-	$(STRIP) $@
-endif
 
 #
 # Install
