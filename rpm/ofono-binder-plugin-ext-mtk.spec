@@ -6,6 +6,7 @@ Summary: MediaTek IRadio extension ofono binder plugin
 License: BSD
 URL: https://github.com/monich/ofono-binder-plugin-ext-sample
 Source: %{name}-%{version}.tar.bz2
+Provides: ofono-ims-support
 
 BuildRequires: ofono-devel
 BuildRequires: pkgconfig
