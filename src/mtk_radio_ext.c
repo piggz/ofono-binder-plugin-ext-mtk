@@ -31,6 +31,8 @@
 #include <gutil_log.h>
 #include <gutil_macros.h>
 
+#include "mtk_ims_call.h"
+
 #define MTK_RADIO_CALL_TIMEOUT (3*1000) /* ms */
 
 typedef GObjectClass MtkRadioExtClass;
@@ -400,6 +402,10 @@ mtk_radio_ext_handle_call_info_indication(
         g_signal_emit(self, mtk_radio_ext_signals[SIGNAL_CALL_INFO],
                       0, call_id, msg_type, call_mode, number);
 
+        //Force a hangup if call is disconnected
+        if (msg_type == CALL_INFO_MSG_TYPE_DISCONNECTED) {
+            mtk_ims_call_hangup(self, call_id, BINDER_EXT_CALL_HANGUP_TERMINATE, BINDER_EXT_CALL_HANGUP_NO_FLAGS, NULL, NULL, NULL);
+        }
         g_strfreev(data);
     } else {
         DBG("%s: failed to parse callInfoIndication data", self->slot);
