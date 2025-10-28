@@ -399,13 +399,16 @@ mtk_radio_ext_handle_call_info_indication(
         DBG("%s: callInfoIndication callId:%d msgType:%d callMode:%d number:%s",
             self->slot, call_id, msg_type, call_mode, number);
 
+        //Force a hangup if call is disconnected
+        if (msg_type == CALL_INFO_MSG_TYPE_DISCONNECTED) {
+            mtk_radio_ext_hangup_all(self, NULL, NULL, NULL);
+            //mtk_ims_call_hangup(self, call_id, BINDER_EXT_CALL_HANGUP_TERMINATE, BINDER_EXT_CALL_HANGUP_NO_FLAGS, NULL, NULL, NULL);
+        }
+
         g_signal_emit(self, mtk_radio_ext_signals[SIGNAL_CALL_INFO],
                       0, call_id, msg_type, call_mode, number);
 
-        //Force a hangup if call is disconnected
-        if (msg_type == CALL_INFO_MSG_TYPE_DISCONNECTED) {
-            mtk_ims_call_hangup(self, call_id, BINDER_EXT_CALL_HANGUP_TERMINATE, BINDER_EXT_CALL_HANGUP_NO_FLAGS, NULL, NULL, NULL);
-        }
+
         g_strfreev(data);
     } else {
         DBG("%s: failed to parse callInfoIndication data", self->slot);
@@ -1477,6 +1480,8 @@ mtk_radio_ext_hangup_all(
     GDestroyNotify destroy,
     void* user_data)
 {
+    DBG("");
+
     return mtk_radio_ext_result_request_submit(self,
         MTK_RADIO_REQ_HANGUP_ALL,
         IMS_RADIO_RESP_HANGUP_ALL,
