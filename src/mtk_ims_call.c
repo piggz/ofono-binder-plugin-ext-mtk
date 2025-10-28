@@ -237,7 +237,7 @@ mtk_ims_call_handle_call_info(
         return;
     }
 
-    DBG("call len: %d", self->calls->len);
+    DBG("calls len: %d", self->calls->len);
     for (int i = 0; i < self->calls->len; i++) {
         BinderExtCallInfo* info =
             (BinderExtCallInfo*) g_ptr_array_index(self->calls, i);
@@ -254,14 +254,17 @@ mtk_ims_call_handle_call_info(
         call = mtk_ims_call_info_new(call_id, call_mode, number);
         g_ptr_array_add(self->calls, call);
     }
-    call->state = mtk_ims_call_msg_type_to_state(msg_type);
 
     if (msg_type == CALL_INFO_MSG_TYPE_DISCONNECTED) {
         DBG("call is disconnected, should remove from list");
         g_signal_emit(THIS(user_data),
                       mtk_ims_call_signals[SIGNAL_CALL_DISCONNECTED], 0, call_id, "");
         g_ptr_array_remove(self->calls, call);
+    } else {
+        call->state = mtk_ims_call_msg_type_to_state(msg_type);
     }
+
+    DBG("calls len: %d", self->calls->len);
 
     DBG("sending call state changed signal");
 
